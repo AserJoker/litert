@@ -1,0 +1,8 @@
+*.json
+*.out
+.cache
+build
+atom.*
+*.dll
+*.exe
+*.pdb
