@@ -19,9 +19,12 @@ public:
   std::vector<variable *> call(context *, variable *,
                                const std::vector<variable *> &,
                                const std::string & = "<internel>",
-                               const uint32_t & = 0, const uint32_t & = 0) override;
+                               const uint32_t & = 0,
+                               const uint32_t & = 0) override;
   variable_function *bind(context *, variable *);
   const std::string to_string() const override;
+  const std::string name() const;
+  const uint32_t length() const;
   bool to_boolean() const override;
 };
 } // namespace litert::engine

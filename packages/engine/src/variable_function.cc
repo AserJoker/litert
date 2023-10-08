@@ -37,3 +37,5 @@ const std::string variable_function::to_string() const {
   return fmt::format("[func {}]", _name);
 }
 bool variable_function::to_boolean() const { return true; }
+const std::string variable_function::name() const { return _name; }
+const uint32_t variable_function::length() const { return _length; }

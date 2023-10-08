@@ -51,7 +51,9 @@ context::call_stack(const std::string &filename, const uint32_t &line,
   tail.column = column;
   return res;
 };
-
+variable *context::create(const char *data) {
+  return new variable_string(this, data);
+};
 variable *context::create(const std::string &data) {
   return new variable_string(this, data);
 };
@@ -127,3 +129,26 @@ variable *context::create(variable *val) {
   _current_scope->add_variable(res);
   return res;
 };
+void context::with_try_catch(
+    const std::function<void()> &try_block,
+    const std::function<void(variable *)> &catch_block) {
+  _try_catch_stack.push_back(
+      {._scope = _current_scope, ._catch_block = catch_block});
+  try {
+    auto sc = push_scope();
+    try_block();
+    pop_scope(sc);
+    _try_catch_stack.pop_back();
+  } catch (variable *e) {
+    auto last_frame = *_try_catch_stack.rbegin();
+    _try_catch_stack.pop_back();
+    last_frame._scope->add_variable(e);
+    pop_scope(last_frame._scope);
+    auto sc = push_scope();
+    catch_block(e);
+    pop_scope(sc);
+  }
+}
+void context::task(const std::function<bool()> &handle) {
+  _tasks.push_back(handle);
+}

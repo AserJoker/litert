@@ -18,12 +18,22 @@ public:
     uint32_t column;
   };
 
+  struct try_catch_frame {
+    scope *_scope;
+    std::function<void(variable *)> _catch_block;
+  };
+
 private:
+  friend class runtime;
+
   scope *_current_scope;
   runtime *_rt;
 
   variable *_nil;
   std::list<call_frame> _call_stack;
+  std::list<try_catch_frame> _try_catch_stack;
+
+  std::list<std::function<bool()>> _tasks;
 
 public:
   scope *push_scope();
@@ -38,7 +48,10 @@ public:
   void pop_call_stack();
   const std::list<call_frame> call_stack(const std::string &, const uint32_t &,
                                          const uint32_t &) const;
+  void with_try_catch(const std::function<void()> &,
+                      const std::function<void(variable *)> &);
   variable *create(const std::string &);
+  variable *create(const char *);
   variable *create(const int8_t &);
   variable *create(const int16_t &);
   variable *create(const int32_t &);
@@ -59,5 +72,6 @@ public:
     }
     return create(vitems);
   }
+  void task(const std::function<bool()> &);
 };
 } // namespace litert::engine
